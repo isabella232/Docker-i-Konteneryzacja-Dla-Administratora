@@ -1,0 +1,5 @@
+docker container create -it --network MAILBRIDGE --name maildb -v SQL:/var/lib/mysql -v SQLLOG:/var/log/ my-maildb:1.0
+
+docker container create -it --name mailsrv --network MAILBRIDGE -p 25:25 -p 465:465 -p 587:587 -p 110:110 -p 143:143 -p 993:993 -p 995:995 -v MAILSRVPOSTFIX:/etc/postfix/ -v MAILSRVDOVECOT:/etc/dovecot/ -v MAILSRVMAIL:/var/mail/ -v MAILSRVLOG:/var/log/ my-mailsrv:1.0
+
+docker container create -it --name mailpostfixadmin --network MAILBRIDGE -p 8080:80 -e POSTFIXADMIN_DB_TYPE=mysqli -e POSTFIXADMIN_DB_HOST=maildb -e POSTFIXADMIN_DB_USER=mailuser -e POSTFIXADMIN_DB_PASSWORD=mailPWD -e POSTFIXADMIN_DB_NAME=maildb -v POSTFIXADMIN:/var/www/html/ postfixadmin

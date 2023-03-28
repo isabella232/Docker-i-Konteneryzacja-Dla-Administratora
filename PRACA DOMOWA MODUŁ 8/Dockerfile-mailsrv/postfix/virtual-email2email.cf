@@ -1,0 +1,5 @@
+user = mailuser
+password = mailPWD
+hosts = maildb
+dbname = maildb
+query = SELECT email FROM virtual_Users WHERE email='%s' and status_id=1

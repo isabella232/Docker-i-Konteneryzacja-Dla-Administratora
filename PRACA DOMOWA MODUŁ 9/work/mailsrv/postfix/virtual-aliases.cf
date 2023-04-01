@@ -1,0 +1,5 @@
+user = mailuser
+password = mailPWD
+hosts = maildb
+dbname = maildb
+query = SELECT destination FROM virtual_Aliases WHERE source='%s' and status_id=1

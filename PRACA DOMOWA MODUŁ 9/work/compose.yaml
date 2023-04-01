@@ -1,0 +1,122 @@
+version: "3.9"
+services:
+  www1:
+    container_name: www1
+    build: ./www1
+    ports:
+      - "8082:80"
+    networks:
+      WWW1BR:
+        ipv4_address: 172.19.0.5
+  www2:
+    container_name: www2
+    build: ./www2
+    ports:
+      - "8083:80"
+    networks:
+      WWW2BR:
+        ipv4_address: 172.20.0.5
+  www3:
+    container_name: www3
+    build: ./www3
+    ports:
+      - "8084:80"
+    networks:
+      WWW3BR:
+        ipv4_address: 172.21.0.5
+  maildb:
+    container_name: maildb
+    build: ./maildb
+    environment:
+      MARIADB_ROOT_PASSWORD: "Dzisiaj123.1!"
+    ports:
+      - "3306:3306"
+    volumes:
+      - SQL:/var/lib/mysql/
+      - SQLLOG:/var/log/
+    networks:
+      MAILBR:
+        ipv4_address: 172.18.0.5
+  mailsrv:
+    container_name: mailsrv
+    build: ./mailsrv
+    ports:
+      - "25:25"
+      - "465:465"
+      - "587:587"
+      - "110:110"
+      - "143:143"
+      - "993:993"
+      - "995:995"
+    depends_on:
+      - maildb
+    volumes:
+      - MAILSRVPOSTFIX:/etc/postfix/
+      - MAILSRVDOVECOT:/etc/dovecot/
+      - MAILSRVMAIL:/var/mail/
+      - MAILSRVLOG:/var/log/
+    networks:
+      MAILBR:
+        ipv4_address: 172.18.0.6
+  mailpostfixadmin:
+    container_name: mailpostfixadmin
+    image: postfixadmin:latest
+    environment:
+      POSTFIXADMIN_DB_TYPE: "mysqli"
+      POSTFIXADMIN_DB_HOST: "maildb"
+      POSTFIXADMIN_DB_USER: "mailuser"
+      POSTFIXADMIN_DB_PASSWORD: "mailPWD"
+      POSTFIXADMIN_DB_NAME: "maildb"
+    ports:
+      - "8080:80"
+    depends_on:
+      - maildb
+      - mailsrv
+    volumes:
+      - POSTFIXADMIN:/var/www/html/
+    networks:
+      MAILBR:
+        ipv4_address: 172.18.0.7
+    
+        
+volumes:
+  SQL:
+    driver: local
+  SQLLOG:
+    driver: local
+  MAILSRVPOSTFIX:
+    driver: local
+  MAILSRVDOVECOT:
+    driver: local
+  MAILSRVMAIL:
+    driver: local
+  MAILSRVLOG:
+    driver: local
+  POSTFIXADMIN:
+    driver: local
+    
+networks:
+  WWW1BR:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1
+  WWW2BR:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+  WWW3BR:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+          gateway: 172.21.0.1
+  MAILBR:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1

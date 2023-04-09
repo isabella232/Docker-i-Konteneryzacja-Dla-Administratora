@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  www1:
+    image: www1:1.0
+    deploy:
+      replicas: 4
+    ports:
+      - "8082:80"
+  www2:
+    image: www2:1.0
+    deploy:
+      replicas: 4
+    ports:
+      - "8083:80"
+  www3:
+    image: www3:1.0
+    deploy:
+      replicas: 4
+    ports:
+      - "8084:80"
